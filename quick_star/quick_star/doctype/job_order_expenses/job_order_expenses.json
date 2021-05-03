@@ -1,0 +1,100 @@
+{
+ "creation": "2021-05-03 03:26:50.360238",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "item",
+  "posting_date",
+  "amount",
+  "billing_amount",
+  "supplier",
+  "paid_from",
+  "purchase_taxes_and_charges_template",
+  "reference_doc",
+  "reference"
+ ],
+ "fields": [
+  {
+   "columns": 2,
+   "fieldname": "item",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Item",
+   "options": "Item",
+   "reqd": 1
+  },
+  {
+   "columns": 1,
+   "default": "Today",
+   "fieldname": "posting_date",
+   "fieldtype": "Date",
+   "label": "Date"
+  },
+  {
+   "columns": 1,
+   "fieldname": "amount",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Amount"
+  },
+  {
+   "columns": 1,
+   "fieldname": "billing_amount",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Billing Amount"
+  },
+  {
+   "columns": 1,
+   "fieldname": "supplier",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Supplier",
+   "options": "Supplier"
+  },
+  {
+   "columns": 2,
+   "fieldname": "paid_from",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Paid From",
+   "options": "Account"
+  },
+  {
+   "columns": 2,
+   "fieldname": "purchase_taxes_and_charges_template",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Purchase Taxes and Charges Template",
+   "options": "Purchase Taxes and Charges Template"
+  },
+  {
+   "fieldname": "reference_doc",
+   "fieldtype": "Select",
+   "label": "Reference Doc",
+   "options": "Purchase Invoice\nJournal Entry",
+   "read_only": 1
+  },
+  {
+   "columns": 1,
+   "fieldname": "reference",
+   "fieldtype": "Dynamic Link",
+   "in_list_view": 1,
+   "label": "Reference",
+   "options": "reference_doc",
+   "read_only": 1
+  }
+ ],
+ "istable": 1,
+ "modified": "2021-05-03 03:50:27.571025",
+ "modified_by": "Administrator",
+ "module": "Quick Star",
+ "name": "Job Order Expenses",
+ "owner": "Administrator",
+ "permissions": [],
+ "quick_entry": 1,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}
