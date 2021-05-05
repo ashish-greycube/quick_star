@@ -40,6 +40,22 @@ class JobOrder(Document):
                 pe = self.make_payment_entry(d)
                 d.db_set("reference", pe.name)
 
+    def on_update(self):
+        prev_doc = self.get_doc_before_save()
+        for d in prev_doc.job_order_expenses:
+            exists = [curr for curr in self.job_order_expenses if curr.name == d.name]
+            if not exists:
+                to_cancel = frappe.get_doc(d.reference_doc, d.reference)
+                to_cancel.cancel()
+
+        for d in prev_doc.job_order_customer_advance:
+            exists = [
+                curr for curr in self.job_order_customer_advance if curr.name == d.name
+            ]
+            if not exists:
+                to_cancel = frappe.get_doc("Payment Entry", d.reference)
+                to_cancel.cancel()
+
     def make_payment_entry(self, advance):
         payment = frappe.new_doc("Payment Entry")
         payment.posting_date = today()
@@ -79,6 +95,7 @@ class JobOrder(Document):
         pi.supplier = item.supplier
         pi.currency = get_default_currency()
         pi.conversion_rate = 1
+        pi.taxes_and_charges = item.purchase_taxes_and_charges_template
 
         pi.append(
             "items",
@@ -91,6 +108,8 @@ class JobOrder(Document):
                 "stock_uom": item_details.get("stock_uom"),
             },
         )
+        pi.set_taxes()
+        pi.calculate_taxes_and_totals()
         pi.insert()
         pi.submit()
         item.db_set("reference_doc", "Purchase Invoice")
@@ -126,10 +145,47 @@ class JobOrder(Document):
 
     def set_order_fees(self):
         if not self.order_fees:
-            default_order_item = frappe.db.get_single_value(
-                "Company", "default_item_for_order_fees_cf"
+            default_order_item = frappe.get_cached_value(
+                "Company", self.company, "default_item_for_order_fees_cf"
             )
             if default_order_item:
                 _, data = execute(frappe._dict({"item_code": default_order_item}))
                 if data:
                     self.order_fees = data[0].get("selling_rate")
+
+    def on_submit(self):
+        self.make_sales_invoice()
+
+    def make_sales_invoice(self):
+        si = frappe.new_doc("Sales Invoice")
+        si.company = self.company
+        si.customer = self.customer
+        si.currency = frappe.get_cached_value(
+            "Company", self.company, "default_currency"
+        )
+        si.posting_date = today()
+
+        for d in self.job_order_expenses:
+            si.append(
+                "items", {"item_code": d.item, "rate": d.billing_amount, "qty": 1}
+            )
+        default_order_item = frappe.get_cached_value(
+            "Company", self.company, "default_item_for_order_fees_cf"
+        )
+        if not default_order_item:
+            frappe.throw(
+                "Please set the %s in %s Company Settings."
+                % (frappe.bold("Default Order Fees Item"), frappe.bold(self.company))
+            )
+        si.append(
+            "items",
+            {
+                "item_code": default_order_item,
+                "rate": self.order_fees,
+                "qty": 1,
+            },
+        )
+
+        si.set_missing_values()
+        si.insert()
+        si.submit()

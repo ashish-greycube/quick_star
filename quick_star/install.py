@@ -17,6 +17,7 @@ def after_install():
                 "fieldtype": "Link",
                 "insert_after": "default_warehouse_for_sales_return",
                 "options": "Item",
+                "reqd": 1,
             },
         ]
     }

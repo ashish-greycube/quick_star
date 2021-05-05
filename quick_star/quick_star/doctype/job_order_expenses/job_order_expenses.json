@@ -8,6 +8,8 @@
   "posting_date",
   "amount",
   "billing_amount",
+  "column_break_5",
+  "delete_expense",
   "supplier",
   "paid_from",
   "purchase_taxes_and_charges_template",
@@ -84,10 +86,19 @@
    "label": "Reference",
    "options": "reference_doc",
    "read_only": 1
+  },
+  {
+   "fieldname": "column_break_5",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "delete_expense",
+   "fieldtype": "Button",
+   "label": "Delete Expense"
   }
  ],
  "istable": 1,
- "modified": "2021-05-03 03:50:27.571025",
+ "modified": "2021-05-04 18:06:45.728020",
  "modified_by": "Administrator",
  "module": "Quick Star",
  "name": "Job Order Expenses",
