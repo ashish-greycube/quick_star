@@ -8,7 +8,7 @@ import frappe
 from frappe import _
 from frappe.model.document import Document
 from frappe.model.utils.user_settings import get
-from frappe.utils import today, now, flt
+from frappe.utils import today, now, flt, get_link_to_form
 from erpnext import get_default_currency
 from erpnext.stock.get_item_details import get_basic_details
 from erpnext.stock.report.item_price_stock.item_price_stock import execute
@@ -200,4 +200,11 @@ class JobOrder(Document):
 
         si.set_missing_values()
         si.insert()
-        si.submit()
+        # si.submit()
+        frappe.msgprint(
+            msg=_("Sales Invoice {0} created.").format(
+                get_link_to_form("Sales Invoice", si.name)
+            ),
+            title="Success",
+            indicator="green",
+        )
