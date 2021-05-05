@@ -5,6 +5,7 @@
 from __future__ import unicode_literals
 
 import frappe
+from frappe import _
 from frappe.model.document import Document
 from frappe.model.utils.user_settings import get
 from frappe.utils import today, now, flt
@@ -37,24 +38,35 @@ class JobOrder(Document):
 
         for d in self.job_order_customer_advance:
             if not d.reference:
-                pe = self.make_payment_entry(d)
+                try:
+                    pe = self.make_payment_entry(d)
+                except Exception as e:
+                    raise e
+
                 d.db_set("reference", pe.name)
 
     def on_update(self):
-        prev_doc = self.get_doc_before_save()
-        for d in prev_doc.job_order_expenses:
-            exists = [curr for curr in self.job_order_expenses if curr.name == d.name]
-            if not exists:
-                to_cancel = frappe.get_doc(d.reference_doc, d.reference)
-                to_cancel.cancel()
+        pass
 
-        for d in prev_doc.job_order_customer_advance:
-            exists = [
-                curr for curr in self.job_order_customer_advance if curr.name == d.name
-            ]
-            if not exists:
-                to_cancel = frappe.get_doc("Payment Entry", d.reference)
-                to_cancel.cancel()
+    def delete_expense(self, doctype, docname):
+        self.job_order_expenses = [
+            d for d in self.job_order_expenses if not d.reference == docname
+        ]
+        self.save()
+        frappe.get_doc(doctype, docname).cancel()
+        self.reload()
+
+    def delete_advance(
+        self,
+        docname,
+        doctype="Payment Entry",
+    ):
+        self.job_order_customer_advance = [
+            d for d in self.job_order_customer_advance if not d.reference == docname
+        ]
+        self.save()
+        frappe.get_doc(doctype, docname).cancel()
+        self.reload()
 
     def make_payment_entry(self, advance):
         payment = frappe.new_doc("Payment Entry")

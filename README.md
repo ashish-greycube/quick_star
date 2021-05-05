@@ -9,15 +9,22 @@
   - Create and Submit Journal Entry for expenses with Paid From account
   - Create and Submit Payment Entry for Advcances
   - Set Order fees from item price of Default Order Fees Item in company setting
-- On Update:
-  - Cancel linked Purchase Invoice/Journal Entry of expense has been deleted
-  - Cancel Payment Entry if advance has been deleted
 - On Submit:
+
   - Create Sales Invoice with expenses as items
   - Add Default Order Fees Item for order charge
-- Job Order Expense row not editable if reference (PI,JE) already created
-- Advance row will not be editable if Payment Entry already created.
-- On delete of Expense/Advance prompt user for Confirmation. On Save item will be deleted and linked doc cancelled.
+
+- Job Order Expense row:
+
+  - not editable if reference (PI,JE) already created
+  - Prompt user for confirmation on delete
+  - Cancel Purchase Invoice/Journal Entry linked to deleted expense
+
+- Job Order Customer Advance row:
+
+  - Advance row will not be editable if Payment Entry already created.
+  - Prompt user for confirmation on delete
+  - Cancel Payment Entry linked to deleted advance
 
 ### Install
 

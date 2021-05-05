@@ -26,6 +26,11 @@ frappe.ui.form.on("Job Order", {
       });
     }
   },
+
+  // validate: function (frm) {
+  //   advances = frm.doc.job_order_customer_advance.filter((t) => !t.reference);
+  //   // if (!advances.length) return;
+  // },
 });
 
 frappe.ui.form.on("Job Order Customer Advance", {
@@ -46,9 +51,17 @@ frappe.ui.form.on("Job Order Customer Advance", {
         link,
       ]),
       function () {
-        frappe.msgprint(
-          __("Payment Entry {0} will be cancelled on save.", [link])
-        );
+        frappe.call({
+          method: "delete_advance",
+          doc: frm.doc,
+          args: {
+            doctype: "Payment Entry",
+            docname: delete_doc.reference,
+          },
+          callback: function () {
+            frm.reload_doc();
+          },
+        });
       },
       function () {
         frm.reload_doc();
@@ -73,12 +86,17 @@ frappe.ui.form.on("Job Order Expenses", {
         link,
       ]),
       function () {
-        frappe.msgprint(
-          __("{0} {1} will be cancelled on save.", [
-            delete_doc.reference_doc.bold(),
-            link,
-          ])
-        );
+        frappe.call({
+          method: "delete_expense",
+          doc: frm.doc,
+          args: {
+            doctype: delete_doc.reference_doc,
+            docname: delete_doc.reference,
+          },
+          callback: function () {
+            frm.reload_doc();
+          },
+        });
       },
       function () {
         frm.reload_doc();
