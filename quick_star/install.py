@@ -18,7 +18,16 @@ def after_install():
                 "insert_after": "default_warehouse_for_sales_return",
                 "options": "Item",
                 "reqd": 1,
-            },
-        ]
+            }
+        ],
+        "Sales Invoice": [
+            {
+                "fieldname": "job_order_cf",
+                "label": "Job Order",
+                "fieldtype": "Link",
+                "insert_after": "due_date",
+                "options": "Job Order",
+            }
+        ],
     }
     create_custom_fields(custom_fields, update=False)
