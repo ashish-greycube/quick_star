@@ -22,7 +22,10 @@ frappe.ui.form.on("Job Order", {
       let can_edit = !grid_row.doc.reference;
       grid_row.activate();
       grid_row.docfields.forEach((f) => {
-        grid_row.toggle_editable(f.fieldname, can_edit);
+        grid_row.toggle_editable(
+          f.fieldname,
+          f.fieldname == "billing_amount" ? true : can_edit
+        );
       });
     }
   },
@@ -35,7 +38,6 @@ frappe.ui.form.on("Job Order", {
 
 frappe.ui.form.on("Job Order Customer Advance", {
   before_job_order_customer_advance_remove: function (frm, cdt, cdn) {
-    console.log("bb");
     let delete_doc = frm.doc.job_order_customer_advance.filter(
       (t) => t.name == cdn
     )[0];
